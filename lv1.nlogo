@@ -21,7 +21,7 @@ to setup
   if Maps = "OneWay" [setup-oneway]
   if Maps = "Stuck" [setup-stuck]
   if Maps = "Empty" [setup-empty]
-  if Maps = "Maze" [setup-maze]
+  if Maps = "Cross" [setup-cross]
   if Maps ="Random" [setup-random]
 
 end
@@ -76,20 +76,7 @@ end
 to setup-oneway
   ask patches [
     ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = 10 and pycor >= 12 and pycor <= halfedge - 1
-      [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pycor = 10 and pxcor >= 10 and pxcor <= halfedge - 1
-      [ set pcolor brown ]
-
-  ]
-  reset-ticks
-end
-
-to setup-stuck
-  ask patches [
-    ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = 15 and pycor >= 15 and pycor <= halfedge - 1
+    if pxcor = 15 and pycor >= 17 and pycor <= halfedge - 1
       [ set pcolor brown ]
     ;; if patches are between (0,0) to (edge,0)...
     if pycor = 15 and pxcor >= 15 and pxcor <= halfedge - 1
@@ -99,35 +86,42 @@ to setup-stuck
   reset-ticks
 end
 
+to setup-stuck
+  ask patches [
+    ;; if patches are between (0,0) to (0,edge)...
+    if pxcor = 15 and pycor >= 15 and pycor <= (halfedge - 1)
+      [ set pcolor brown ]
+    ;; if patches are between (0,0) to (edge,0)...
+    if pycor = 15 and pxcor >= 15 and pxcor <= (halfedge - 1)
+      [ set pcolor brown ]
+  ]
+  reset-ticks
+end
+
 to setup-empty
 end
 
-to setup-maze
+to setup-cross
   ask patches [
-    if pxcor = -10 and pycor >= -10 and pycor <= 10
+    if pxcor =  2 and pycor >= -10 and pycor <= -2
       [ set pcolor brown ]
-    if pxcor = -8 and pycor >= -9 and pycor <= 7
+    if pxcor = -2 and pycor >= -10 and pycor <= -2
       [ set pcolor brown ]
-    if pycor = 10 and pxcor >= -10 and pxcor <= 7
+
+    if pxcor =  2 and pycor >=  2  and pycor <= 10
       [ set pcolor brown ]
-    if pycor = 7 and pxcor >= -8 and pxcor <= 5
+    if pxcor = -2 and pycor >=  2  and pycor <= 10
       [ set pcolor brown ]
-    if pxcor = 7 and pycor >= -7 and pycor <= 10
-      [ set pcolor brown ]
-    if pxcor = 5 and pycor >= -4 and pycor <= 7
-      [ set pcolor brown ]
-    if pycor = -7 and pxcor >= -5 and pxcor <= 7
-      [ set pcolor brown ]
-    if pycor = -4 and pxcor >= -2 and pxcor <= 5
-      [ set pcolor brown ]
-    if pxcor = -5 and pycor >= -7 and pycor <= 5
-      [ set pcolor brown ]
-    if pxcor = -2 and pycor >= -4 and pycor <= 3
-      [ set pcolor brown ]
-    if pycor = 5 and pxcor >= -5 and pxcor <= 3
-      [ set pcolor brown ]
-    if pxcor = 3 and pycor >= -2 and pycor <= 5
-      [ set pcolor brown ]
+
+    if pycor = -2 and pxcor >= -10 and pxcor <= -2
+      [set pcolor brown]
+    if pycor =  2 and pxcor >= -10 and pxcor <= -2
+      [set pcolor brown]
+    if pycor = -2 and pxcor >=   2 and pxcor <= 10
+      [set pcolor brown]
+    if pycor =  2 and pxcor >=   2 and pxcor <= 10
+      [set pcolor brown]
+
   ]
   reset-ticks
 end
@@ -189,8 +183,8 @@ CHOOSER
 184
 Maps
 Maps
-"Empty" "Stuck" "OneWay" "Maze" "Random"
-1
+"Empty" "Stuck" "OneWay" "Cross" "Random"
+3
 
 @#$#@#$#@
 ## WHAT IS IT?
