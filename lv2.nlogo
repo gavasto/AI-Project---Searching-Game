@@ -3,7 +3,6 @@ globals [
   halfedge
 ]
 breed [agents move]
-
 to initial
   clear-all
   import-pcolors "background.jpg"
@@ -17,34 +16,34 @@ to initial
 
   ;;Starting & Goal point
   setup-point1
-
   ;;Set map
   if Maps = "OneWay" [setup-oneway1]
   if Maps = "Stuck" [setup-stuck1]
   if Maps = "Empty" [setup-empty]
-  if Maps = "Maze" [setup-maze]
+  if Maps = "Cross" [setup-cross]
   if Maps ="Random" [setup-random]
 end
 to swap
-   clear-all
-   import-pcolors "background.jpg"
-   reset-ticks
+  clear-all
+  import-pcolors "background.jpg"
+  reset-ticks
 
-   set edge 38
-   set halfedge (edge / 2)
+  set edge 38
+  set halfedge (edge / 2)
 
-   ;;Border the map
-   setup-border
+  ;;Border the map
+  setup-border
 
-   ;;Starting & Goal point
+    ;;Starting & Goal point
    setup-point2
    ;;Set map
    if Maps = "OneWay" [setup-oneway2]
    if Maps = "Stuck" [setup-stuck2]
    if Maps = "Empty" [setup-empty]
-   if Maps = "Maze" [setup-maze]
+   if Maps = "Cross" [setup-cross]
    if Maps ="Random" [setup-random]
 end
+
 to setup-point1
    ;; setup STARTING POINT
    ask patches [
@@ -68,17 +67,6 @@ to setup-point1
     if pxcor = 17 and pycor = 18
       [ set pcolor yellow ]
     if pxcor = 18 and pycor = 18
-      [ set pcolor yellow ]                               ;
-  ]
-  ;; setup ENDING POINT
-   ask patches [
-    if pxcor = 17 and pycor = -17
-      [ set pcolor yellow ]
-    if pxcor = 18 and pycor = -17
-      [ set pcolor yellow ]
-    if pxcor = 17 and pycor = -18
-      [ set pcolor yellow ]
-    if pxcor = 18 and pycor = -18
       [ set pcolor yellow ]                               ;
   ]
 end
@@ -108,17 +96,6 @@ to setup-point2
     if pxcor = -18 and pycor = 18
       [ set pcolor yellow ]                               ;
   ]
-  ;; setup ENDING POINT
-   ask patches [
-    if pxcor = -17 and pycor = -17
-      [ set pcolor yellow ]
-    if pxcor = -18 and pycor = -17
-      [ set pcolor yellow ]
-    if pxcor = -17 and pycor = -18
-      [ set pcolor yellow ]
-    if pxcor = -18 and pycor = -18
-      [ set pcolor yellow ]                               ;
-  ]
 end
 to setup-border
   ;;Create border
@@ -146,14 +123,6 @@ to setup-oneway1
     ;; if patches are between (0,0) to (edge,0)...
     if pycor = 15 and pxcor >= 15 and pxcor <= (halfedge - 1)
       [ set pcolor brown ]
-
-    ;; if patches are between (0,0) to (0,edge)...
-   if pycor = -15 and pxcor >= 17 and pxcor <= (halfedge - 1)
-      [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-   if pxcor = 15 and pycor >= (- halfedge + 1) and pycor <= -15
-      [ set pcolor brown ]
-
   ]
   reset-ticks
 end
@@ -166,13 +135,6 @@ to setup-oneway2
     ;; if patches are between (0,0) to (edge,0)...
     if pycor = 15 and pxcor >= (- halfedge + 1)  and pxcor <= -15
       [ set pcolor brown ]
-
-    if pycor = -15 and pxcor >= (- halfedge + 1) and pxcor <= -17
-      [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pxcor = -15 and pycor >= (- halfedge + 1) and pycor <= -15
-      [ set pcolor brown ]
-
   ]
   reset-ticks
 end
@@ -184,13 +146,6 @@ to setup-stuck1
       [ set pcolor brown ]
     ;; if patches are between (0,0) to (edge,0)...
     if pycor = 15 and pxcor >= 15 and pxcor <= (halfedge - 1)
-      [ set pcolor brown ]
-
-    ;; if patches are between (0,0) to (0,edge)...
-   if pycor = -15 and pxcor >= 15 and pxcor <= (halfedge - 1)
-      [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-   if pxcor = 15 and pycor >= (- halfedge + 1) and pycor <= -15
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -204,12 +159,6 @@ to setup-stuck2
     ;; if patches are between (0,0) to (edge,0)...
     if pycor = 15 and pxcor >= (- halfedge + 1) and pxcor <= -15
       [ set pcolor brown ]
-
-    if pycor = -15 and pxcor >= (- halfedge + 1) and pxcor <= -15
-      [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pxcor = -15 and pycor >= (- halfedge + 1) and pycor <= -15
-      [ set pcolor brown ]
   ]
   reset-ticks
 end
@@ -217,7 +166,7 @@ end
 to setup-empty
 end
 
-to setup-maze
+to setup-cross
   ask patches [
     if pxcor =  2 and pycor >= -10 and pycor <= -2
       [ set pcolor brown ]
@@ -243,7 +192,7 @@ to setup-maze
 end
 to setup-random
   ask n-of 100 patches [
-    if pxcor >= (- halfedge) and pxcor <=  halfedge and pycor >= (- halfedge) and pycor <= halfedge and pcolor != yellow and pcolor != orange
+    if pxcor >= (- halfedge) + 1 and pxcor <=  halfedge - 1 and pycor >= (- halfedge) + 1 and pycor <= halfedge - 1 and pcolor != yellow and pcolor != orange
      [set pcolor brown]
   ]
 end
@@ -299,8 +248,8 @@ CHOOSER
 185
 Maps
 Maps
-"Empty" "Stuck" "OneWay" "Maze" "Random"
-3
+"Empty" "Stuck" "OneWay" "Cross" "Random"
+4
 
 BUTTON
 117
