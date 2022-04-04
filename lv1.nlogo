@@ -1,8 +1,16 @@
 globals [
   edge
   halfedge
+  validPatch
+  Start
+  TotalCost
+  prePatch
+  cost
+  visited?
+  active?
 ]
 breed [agents move]
+
 to setup
   clear-all
   import-pcolors "background.jpg"
@@ -24,21 +32,46 @@ to setup
   if Maps = "Cross" [setup-cross]
   if Maps ="Random" [setup-random]
 
+  ask patches
+  [
+    set prePatch nobody
+    set cost 0
+    set visited? false
+    set active? false
+
+  ]
+
+  set validPatch patches with [pcolor != brown and pxcor < 19 and pycor < 19]
+
+  crt 1
+  [
+    setxy -18 -18
+    ht
+    set size 1
+    set pen-size 2
+    set shape "square"
+
+  ]
+
 end
 
 to setup-point
    ;; setup STARTING POINT
-   ask patches [
-    if pxcor = -18 and pycor = -18
-     [ set pcolor orange ]
-  ]
+  set Start patch -18 -18
+  ask Start [set pcolor orange]
+
+   ;ask patches [
+   ; if pxcor = -18 and pycor = -18
+   ;  [ set pcolor orange ]
+ ; ]
    ;; setup agent in starting point
    ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
     set shape "plant"
     set color green
     set size 2
+
     ]
-  ]
+ ]
 
    ;; setup ENDING POINT
    ask patches [
@@ -132,36 +165,93 @@ to setup-random
   ]
 end
 
-to dfs_result
-  ifelse(dfs(turtle 0)) [
-    show "Found goal!!!"
-  ][
-    show "Can't found goal :<"
-  ]
+
+
+;A* algorithm
+to-report SumCost[#Goal]
+  report Cost + Heuristic #Goal
 end
 
-to-report dfs [n]
-  if ([pcolor] of ([patch-here] of n) = yellow)[report true]
-  visited
-  let moveX (list 0 -1 1 0)
-  let moveY (list 1 0 0 -1)
-  foreach [0 1 2 3] [
-    x -> let choice x
-    let newX [xcor] of n + item choice moveX
-    let newY [ycor] of n + item choice moveY
-    if ([pcolor] of patch newX newY != brown and [pcolor] of patch newX newY != blue)[
-    ;if ([pcolor] of patch newX newY != brown)[
-      ask n [move-to patch newX newY]
-      if(dfs(n)) [report true]
-    ]
+to-report Heuristic[#Goal]
+  report distance #Goal
+end
+
+to-report A*[#Start #Goal #Map]
+  ask #Map with[visited?]
+  [
+    set prePatch nobody
+    set Cost 0
+    set visited? false
+    set active? false
   ]
-  report false
+  ask #Start
+  [
+    set prePatch self
+    set visited? true
+    set active? true
+  ]
+  let exists? true
+  while [not[visited?] of #Goal and exists?]
+  [
+    let options #Map with [active?]
+    ifelse any? options
+    [
+      ask min-one-of options [SumCost #Goal]
+      [
+        let Cost-prePatch Cost
+        set active? false
+        let validNei neighbors with [member? self #Map]
+        ask validNei
+        [
+          let v ifelse-value visited? [SumCost #Goal][1000000]
+          if v > (Cost-prePatch + distance myself + Heuristic #Goal)
+          [
+            set prePatch myself
+            set visited? true
+            set active? true
+            set Cost Cost-prePatch + distance prePatch
+            set TotalCost precision Cost 3
+    ]]]]
+    [
+      set exists? false
+  ]]
+  ifelse exists?
+  [
+
+   let current #Goal
+    set TotalCost (precision[Cost] of #Goal 3)
+    let rep(list current)
+    while[current != #Start]
+   [
+      set current[prePatch] of current
+     set rep fput current rep
+    ]
+   report rep
+  ]
+ [
+   report false
+  ]
 end
 
 to visited
   ask patches[
     if any? turtles-here [set pcolor blue]
   ]
+end
+
+to findGoal
+  let Goal patch 18 18
+  let path A* Start Goal validPatch
+  if path != false
+  [
+    visited
+    ask turtle 0
+    [
+      set color orange
+    ]
+    foreach path [p -> ask turtle 0 [move-to p stamp]]
+    set Start Goal]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -216,15 +306,15 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-3
+0
 
 BUTTON
-12
-196
-144
-229
-Depth-first search
-dfs_result
+84
+210
+161
+243
+NIL
+findGoal
 NIL
 1
 T
