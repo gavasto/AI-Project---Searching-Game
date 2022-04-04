@@ -17,7 +17,7 @@ to initial
   ;;Starting & Goal point
   setup-point1
   ;;Set map
-  if Maps = "OneWay" [setup-oneway1]
+  if Maps = "OneWay"[setup-oneway1]
   if Maps = "Stuck" [setup-stuck1]
   if Maps = "Empty" [setup-empty]
   if Maps = "Cross" [setup-cross]
@@ -37,7 +37,7 @@ to swap
     ;;Starting & Goal point
    setup-point2
    ;;Set map
-   if Maps = "OneWay" [setup-oneway2]
+   if Maps = "OneWay"[setup-oneway2]
    if Maps = "Stuck" [setup-stuck2]
    if Maps = "Empty" [setup-empty]
    if Maps = "Cross" [setup-cross]
@@ -74,8 +74,8 @@ end
 to setup-point2
    ;; setup STARTING POINT
    ask patches [
-    if pxcor = 18 and pycor = -18
-     [ set pcolor orange ]
+    if pxcor = 18 and pycor = 18
+      [ set pcolor orange ]
   ]
    ;; setup agent in starting point
    ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
@@ -87,14 +87,14 @@ to setup-point2
 
    ;; setup ENDING POINT
    ask patches [
-    if pxcor = -17 and pycor = 17
+    if pxcor = -17 and pycor = -17
       [ set pcolor yellow ]
-    if pxcor = -18 and pycor = 17
+    if pxcor = -18 and pycor = -17
       [ set pcolor yellow ]
-    if pxcor = -17 and pycor = 18
+    if pxcor = -17 and pycor = -18
       [ set pcolor yellow ]
-    if pxcor = -18 and pycor = 18
-      [ set pcolor yellow ]                               ;
+    if pxcor = -18 and pycor = -18
+      [ set pcolor yellow ]                              ;
   ]
 end
 to setup-border
@@ -130,10 +130,10 @@ end
 to setup-oneway2
   ask patches [
     ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = -15 and pycor >= 17 and pycor <= (halfedge - 1)
+    if pxcor = -15 and pycor >= (- halfedge + 1) and pycor <= -17
       [ set pcolor brown ]
     ;; if patches are between (0,0) to (edge,0)...
-    if pycor = 15 and pxcor >= (- halfedge + 1)  and pxcor <= -15
+    if pycor = -15 and pxcor >= (- halfedge + 1) and pxcor <= -15
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -154,10 +154,10 @@ end
 to setup-stuck2
   ask patches [
     ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = -15 and pycor >= 15 and pycor <= (halfedge - 1)
+    if pxcor = -15 and pycor >= (- halfedge + 1) and pycor <= -15
       [ set pcolor brown ]
     ;; if patches are between (0,0) to (edge,0)...
-    if pycor = 15 and pxcor >= (- halfedge + 1) and pxcor <= -15
+    if pycor = -15 and pxcor >= (- halfedge + 1) and pxcor <= -15
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -280,7 +280,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-1
+4
 
 BUTTON
 117
@@ -302,9 +302,9 @@ NIL
 BUTTON
 10
 196
-142
+78
 229
-Depth-first search
+DFS
 dfs_result
 NIL
 1

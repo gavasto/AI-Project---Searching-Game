@@ -165,93 +165,35 @@ to setup-random
   ]
 end
 
-
-
-;A* algorithm
-to-report SumCost[#Goal]
-  report Cost + Heuristic #Goal
+to dfs_result
+  ifelse(dfs(turtle 0)) [
+    show "Found goal!!!"
+  ][
+    show "Can't found goal :<"
+  ]
 end
 
-to-report Heuristic[#Goal]
-  report distance #Goal
-end
-
-to-report A*[#Start #Goal #Map]
-  ask #Map with[visited?]
-  [
-    set prePatch nobody
-    set Cost 0
-    set visited? false
-    set active? false
-  ]
-  ask #Start
-  [
-    set prePatch self
-    set visited? true
-    set active? true
-  ]
-  let exists? true
-  while [not[visited?] of #Goal and exists?]
-  [
-    let options #Map with [active?]
-    ifelse any? options
-    [
-      ask min-one-of options [SumCost #Goal]
-      [
-        let Cost-prePatch Cost
-        set active? false
-        let validNei neighbors with [member? self #Map]
-        ask validNei
-        [
-          let v ifelse-value visited? [SumCost #Goal][1000000]
-          if v > (Cost-prePatch + distance myself + Heuristic #Goal)
-          [
-            set prePatch myself
-            set visited? true
-            set active? true
-            set Cost Cost-prePatch + distance prePatch
-            set TotalCost precision Cost 3
-    ]]]]
-    [
-      set exists? false
-  ]]
-  ifelse exists?
-  [
-
-   let current #Goal
-    set TotalCost (precision[Cost] of #Goal 3)
-    let rep(list current)
-    while[current != #Start]
-   [
-      set current[prePatch] of current
-     set rep fput current rep
+to-report dfs [n]
+  if ([pcolor] of ([patch-here] of n) = yellow)[report true]
+  visited
+  let moveX (list 0 -1 1 0)
+  let moveY (list 1 0 0 -1)
+  foreach [0 1 2 3] [
+    x -> let choice x
+    let newX [xcor] of n + item choice moveX
+    let newY [ycor] of n + item choice moveY
+    if ([pcolor] of patch newX newY != brown and [pcolor] of patch newX newY != blue)[
+      ask n [move-to patch newX newY]
+      if(dfs(n)) [report true]
     ]
-   report rep
   ]
- [
-   report false
-  ]
+  report false
 end
 
 to visited
   ask patches[
     if any? turtles-here [set pcolor blue]
   ]
-end
-
-to findGoal
-  let Goal patch 18 18
-  let path A* Start Goal validPatch
-  if path != false
-  [
-    visited
-    ask turtle 0
-    [
-      set color orange
-    ]
-    foreach path [p -> ask turtle 0 [move-to p stamp]]
-    set Start Goal]
-
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -306,15 +248,15 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-0
+2
 
 BUTTON
+15
+201
 84
-210
-161
-243
-NIL
-findGoal
+234
+DFS
+dfs_result
 NIL
 1
 T
