@@ -131,6 +131,38 @@ to setup-random
      [set pcolor brown]
   ]
 end
+
+to dfs_result
+  ifelse(dfs(turtle 0)) [
+    show "Found goal!!!"
+  ][
+    show "Can't found goal :<"
+  ]
+end
+
+to-report dfs [n]
+  if ([pcolor] of ([patch-here] of n) = yellow)[report true]
+  visited
+  let moveX (list 0 -1 1 0)
+  let moveY (list 1 0 0 -1)
+  foreach [0 1 2 3] [
+    x -> let choice x
+    let newX [xcor] of n + item choice moveX
+    let newY [ycor] of n + item choice moveY
+    if ([pcolor] of patch newX newY != brown and [pcolor] of patch newX newY != blue)[
+    ;if ([pcolor] of patch newX newY != brown)[
+      ask n [move-to patch newX newY]
+      if(dfs(n)) [report true]
+    ]
+  ]
+  report false
+end
+
+to visited
+  ask patches[
+    if any? turtles-here [set pcolor blue]
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -185,6 +217,23 @@ Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
 3
+
+BUTTON
+12
+196
+144
+229
+Depth-first search
+dfs_result
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
