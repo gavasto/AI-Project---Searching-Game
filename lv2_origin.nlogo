@@ -1,12 +1,11 @@
 globals [
   edge
-  start_x
-  start_y
-  end_x
-  end_y
+  start
+  goal
   occupied
 ]
 
+breed [agents object]
 
 to initial
   clear-all
@@ -51,48 +50,36 @@ end
 
 to setup-point1
    ;; setup STARTING POINT
-  set start_x 1
-  set start_y 1
-  ask patches [
-    if pxcor = start_x and pycor = start_y [set pcolor orange]
-  ]
+  set start patch 1 1
+  ask start [set pcolor orange]
+
    ;; setup agent in starting point
-   create-turtles 1[
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
     set shape "plant"
     set color green
     set size 2
-    setxy start_x start_y
     ]
-
+   ]
    ;; setup ENDING POINT
-   set end_x edge - 1
-   set end_y edge - 1
-   ask patches [
-    if pxcor = end_x and pycor = end_y [set pcolor yellow]
-  ]
+   set goal patch (edge - 1) (edge - 1)
+   ask goal [set pcolor yellow]
 end
 
 to setup-point2
-   ;; setup STARTING POINT
-  set start_x edge - 1
-  set start_y edge - 1
-  ask patches [
-    if pxcor = start_x and pycor = start_y [set pcolor orange]
-  ]
+  ;; setup STARTING POINT
+  set start patch (edge - 1) (edge - 1)
+  ask start [set pcolor orange]
+
    ;; setup agent in starting point
-   create-turtles 1[
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
     set shape "plant"
     set color green
     set size 2
-    setxy start_x start_y
     ]
-
+   ]
    ;; setup ENDING POINT
-   set end_x 1
-   set end_y 1
-   ask patches [
-    if pxcor = end_x and pycor = end_y [set pcolor yellow]
-  ]
+   set goal patch 1 1
+   ask goal [set pcolor yellow]
 end
 
 to setup-border

@@ -1,11 +1,11 @@
 globals [
   edge
-  start_x
-  start_y
-  end_x
-  end_y
+  start1 start2 start3 start4 start5 start6 start7 start8
+  goal
   occupied
 ]
+
+breed [agents object]
 
 to initial
   clear-all
@@ -30,25 +30,92 @@ to initial
 end
 to setup-point
    ;; setup STARTING POINT
-  ask patches [
-    if (pxcor = 1 or pxcor = 20 or pxcor = edge - 1) and (pycor = 1 or pycor = 20 or pycor = 39) [set pcolor orange]
-  ]
+  ;; 1st
+  set start1 patch 1 1
+  ask start1 [set pcolor orange]
    ;; setup agent in starting point
-   create-turtles 1[
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
     set shape "plant"
     set color green
     set size 2
-    setxy start_x start_y
     ]
+   ]
 
+  ;; 2nd
+   set start2 patch 1 20
+  ask start2 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
 
+  ;; 3rd
+  set start3 patch 1 40
+  ask start3 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
+  ;; 4th
+  set start4 patch 20 1
+  ask start4 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
+  ;; 5th
+  set start5 patch 20 40
+  ask start5 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
+  ;; 6th
+  set start6 patch 40 1
+  ask start6 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
+  ;; 7th
+  set start7 patch 40 20
+  ask start7 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
 
-;; setup ENDING POINT
-   set end_x 20
-   set end_y 20
-   ask patches [
-    if pxcor = end_x and pycor = end_y [set pcolor yellow]
-  ]
+  ;; 8th
+  set start8 patch 40 40
+  ask start8 [set pcolor orange]
+   ;; setup agent in starting point
+   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+    set shape "plant"
+    set color green
+    set size 2
+    ]
+   ]
+   ;; setup ENDING POINT
+   set goal patch 20 20
+   ask goal [set pcolor yellow]
 end
 
 
@@ -183,7 +250,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-2
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
