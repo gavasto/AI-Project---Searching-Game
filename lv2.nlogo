@@ -1,15 +1,20 @@
 globals [
   edge
-  halfedge
+  start_x
+  start_y
+  end_x
+  end_y
+  occupied
 ]
-breed [agents move]
+
+
 to initial
   clear-all
   import-pcolors "background.jpg"
   reset-ticks
 
-  set edge 38
-  set halfedge (edge / 2)
+  set edge 40
+  resize-world 0 edge 0 edge
 
   ;;Border the map
   setup-border
@@ -28,8 +33,8 @@ to swap
   import-pcolors "background.jpg"
   reset-ticks
 
-  set edge 38
-  set halfedge (edge / 2)
+  set edge 40
+  resize-world 0 edge 0 edge
 
   ;;Border the map
   setup-border
@@ -46,82 +51,81 @@ end
 
 to setup-point1
    ;; setup STARTING POINT
-   ask patches [
-    if pxcor = -18 and pycor = -18
-     [ set pcolor orange ]
+  set start_x 1
+  set start_y 1
+  ask patches [
+    if pxcor = start_x and pycor = start_y [set pcolor orange]
   ]
    ;; setup agent in starting point
-   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+   create-turtles 1[
     set shape "plant"
     set color green
     set size 2
+    setxy start_x start_y
     ]
-  ]
 
    ;; setup ENDING POINT
+   set end_x edge - 1
+   set end_y edge - 1
    ask patches [
-    if pxcor = 18 and pycor = 18
-      [ set pcolor yellow ]                               ;
+    if pxcor = end_x and pycor = end_y [set pcolor yellow]
   ]
 end
 
 to setup-point2
    ;; setup STARTING POINT
-   ask patches [
-    if pxcor = 18 and pycor = 18
-      [ set pcolor orange ]
+  set start_x edge - 1
+  set start_y edge - 1
+  ask patches [
+    if pxcor = start_x and pycor = start_y [set pcolor orange]
   ]
    ;; setup agent in starting point
-   ask n-of 1 patches with [pcolor = orange and not any? other turtles-here][sprout-agents 1 [
+   create-turtles 1[
     set shape "plant"
     set color green
     set size 2
+    setxy start_x start_y
     ]
-  ]
 
    ;; setup ENDING POINT
+   set end_x 1
+   set end_y 1
    ask patches [
-    if pxcor = -18 and pycor = -18
-      [ set pcolor yellow ]                              ;
+    if pxcor = end_x and pycor = end_y [set pcolor yellow]
   ]
 end
+
 to setup-border
   ;;Create border
   ask patches [
-    ;; if patches are between (-halfedge,-halfedge) to (-halfedge,halfedge)...
-    if pxcor = (- halfedge) and pycor >= (- halfedge) and pycor <= halfedge
-      [ set pcolor brown ]                                ;; ... draws left edge in brown
-    ;; if patches are between (halfedge,-halfedge) to (halfedge,halfedge)...
-    if pxcor =    halfedge  and pycor >= (- halfedge) and pycor <= halfedge
-      [ set pcolor brown ]                                ;; ... draws right edge in brown
-    ;; if patches are between (-halfedge,-halfedge) to (halfedge,-halfedge)...
-    if pycor = (- halfedge) and pxcor >= (- halfedge) and pxcor <= halfedge
-      [ set pcolor brown ]                                ;; ... draws bottom edge in brown
-    ;; if patches are between (-halfedge,halfedge) to (halfedge,halfedge)...
-    if pycor =    halfedge and pxcor >= (- halfedge) and pxcor <=  halfedge
-      [ set pcolor brown ]                                ;; ... draws upper edge in brown
+    if pxcor = 0 and pycor >= 0 and pycor <= edge
+      [ set pcolor brown ]                                ;; ... draws left edge
+    if pxcor = edge and pycor >= 0 and pycor <= edge
+      [ set pcolor brown ]                                ;; ... draws right edge
+    if pycor = 0 and pxcor >= 0 and pxcor <= edge
+      [ set pcolor brown ]                                ;; ... draws bottom edge
+    if pycor = edge and pxcor >= 0 and pxcor <=  edge
+      [ set pcolor brown ]                                ;; ... draws upper edge
   ]
   reset-ticks
 end
 
 to setup-oneway1
   ask patches [
-   if pxcor = 15 and pycor >= 17 and pycor <= (halfedge - 1)
+    if pxcor = 35 and pycor >= 37 and pycor <= edge - 1
       [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pycor = 15 and pxcor >= 15 and pxcor <= (halfedge - 1)
+    if pycor = 35 and pxcor >= 35 and pxcor <= edge - 1
       [ set pcolor brown ]
+
   ]
   reset-ticks
 end
 
 to setup-oneway2
   ask patches [
-    ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = -15 and pycor >= (- halfedge + 1) and pycor <= -17
+    if pxcor = 5 and pycor >= 1 and pycor <= 3
       [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pycor = -15 and pxcor >= (- halfedge + 1) and pxcor <= -15
+    if pycor = 5 and pxcor >= 1 and pxcor <= 5
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -129,11 +133,9 @@ end
 
 to setup-stuck1
   ask patches [
-    ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = 15 and pycor >= 15 and pycor <= (halfedge - 1)
+    if pxcor = 35 and pycor >= 35 and pycor <= edge - 1
       [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pycor = 15 and pxcor >= 15 and pxcor <= (halfedge - 1)
+    if pycor = 35 and pxcor >= 35 and pxcor <= edge - 1
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -141,11 +143,9 @@ end
 
 to setup-stuck2
   ask patches [
-    ;; if patches are between (0,0) to (0,edge)...
-    if pxcor = -15 and pycor >= (- halfedge + 1) and pycor <= -15
+    if pxcor = 5 and pycor >= 1 and pycor <= 5
       [ set pcolor brown ]
-    ;; if patches are between (0,0) to (edge,0)...
-    if pycor = -15 and pxcor >= (- halfedge + 1) and pxcor <= -15
+    if pycor = 5 and pxcor >= 1 and pxcor <= 5
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -156,63 +156,32 @@ end
 
 to setup-cross
   ask patches [
-    if pxcor =  2 and pycor >= -10 and pycor <= -2
+    if pxcor = 18 and pycor >= 5  and pycor <= 18
       [ set pcolor brown ]
-    if pxcor = -2 and pycor >= -10 and pycor <= -2
+    if pxcor = 22 and pycor >= 5  and pycor <= 18
+      [ set pcolor brown ]
+    if pxcor = 18 and pycor >= 22 and pycor <= 35
+      [ set pcolor brown ]
+    if pxcor = 22 and pycor >= 22 and pycor <= 35
       [ set pcolor brown ]
 
-    if pxcor =  2 and pycor >=  2  and pycor <= 10
-      [ set pcolor brown ]
-    if pxcor = -2 and pycor >=  2  and pycor <= 10
-      [ set pcolor brown ]
-
-    if pycor = -2 and pxcor >= -10 and pxcor <= -2
+    if pycor = 22 and pxcor >= 5  and pxcor <= 18
       [set pcolor brown]
-    if pycor =  2 and pxcor >= -10 and pxcor <= -2
+    if pycor = 22 and pxcor >= 22 and pxcor <= 35
       [set pcolor brown]
-    if pycor = -2 and pxcor >=   2 and pxcor <= 10
+    if pycor = 18 and pxcor >= 5  and pxcor <= 18
       [set pcolor brown]
-    if pycor =  2 and pxcor >=   2 and pxcor <= 10
+    if pycor = 18 and pxcor >= 22 and pxcor <= 35
       [set pcolor brown]
 
   ]
   reset-ticks
 end
+
 to setup-random
   ask n-of 100 patches [
-    if pxcor >= (- halfedge) + 1 and pxcor <=  halfedge - 1 and pycor >= (- halfedge) + 1 and pycor <= halfedge - 1 and pcolor != yellow and pcolor != orange
+    if pxcor > 0 and pxcor < edge and pycor > 0 and pycor < edge and pcolor != yellow and pcolor != orange
      [set pcolor brown]
-  ]
-end
-
-to dfs_result
-  ifelse(dfs(turtle 0)) [
-    show "Found goal!!!"
-  ][
-    show "Can't found goal :<"
-  ]
-end
-
-to-report dfs [n]
-  if ([pcolor] of ([patch-here] of n) = yellow)[report true]
-  visited
-  let moveX (list 0 -1 1 0)
-  let moveY (list 1 0 0 -1)
-  foreach [0 1 2 3] [
-    x -> let choice x
-    let newX [xcor] of n + item choice moveX
-    let newY [ycor] of n + item choice moveY
-    if ([pcolor] of patch newX newY != brown and [pcolor] of patch newX newY != blue)[
-      ask n [move-to patch newX newY]
-      if(dfs(n)) [report true]
-    ]
-  ]
-  report false
-end
-
-to visited
-  ask patches[
-    if any? turtles-here [set pcolor blue]
   ]
 end
 @#$#@#$#@
@@ -233,10 +202,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--20
-20
--20
-20
+0
+40
+0
+40
 0
 0
 1
@@ -268,7 +237,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-4
+3
 
 BUTTON
 117
@@ -277,23 +246,6 @@ BUTTON
 124
 Swap
 swap
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-10
-196
-78
-229
-DFS
-dfs_result
 NIL
 1
 T
