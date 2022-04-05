@@ -205,22 +205,22 @@ end
 to-report valid_patch [ID path_color]
   let x (ID mod (edge - 2)) + 1
   let y floor(ID / (edge - 2)) + 1
-  let result []
+  let valid []
   if (x < (edge - 1) and [pcolor] of patch (x + 1) y != brown and [pcolor] of patch (x + 1) y != path_color and [pcolor] of patch (x + 1) y != orange ) [
-    set result insert-item 0 result (patchID (x + 1) y)
+    set valid insert-item 0 valid (patchID (x + 1) y)
   ]
   if (y < (edge - 1) and [pcolor] of patch x (y + 1) != brown and [pcolor] of patch x (y + 1) != path_color and [pcolor] of patch x (y + 1) != orange ) [
-    set result insert-item (length result) result (patchID x (y + 1))
+    set valid insert-item (length valid) valid (patchID x (y + 1))
   ]
   if (x > 1 and [pcolor] of patch (x - 1) y != brown and [pcolor] of patch (x - 1) y != path_color and [pcolor] of patch (x - 1) y != orange) [
-    set result insert-item (length result) result (patchID (x - 1) y)
+    set valid insert-item (length valid) valid (patchID (x - 1) y)
   ]
 
   if (y > 1 and [pcolor] of patch x (y - 1) != brown and [pcolor] of patch x (y - 1) != path_color and [pcolor] of patch x (y - 1) != orange) [
-    set result insert-item (length result) result (patchID x (y - 1))
+    set valid insert-item (length valid) valid (patchID x (y - 1))
   ]
 
-  report result
+  report valid
 end
 
 to bfs [agent path_color]

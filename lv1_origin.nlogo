@@ -117,48 +117,54 @@ to setup-random
   ]
 end
 
+; number patches in board
 to-report patchID [x y]
   report (y - 1) * (edge - 2) + (x - 1)
 end
 
+; get ID of valid patches
 to-report valid_patch [ID path_color]
   let x (ID mod (edge - 2)) + 1
   let y floor(ID / (edge - 2)) + 1
-  let result []
+  let valid []
+    ; move to east
   if (x < (edge - 1) and [pcolor] of patch (x + 1) y != brown and [pcolor] of patch (x + 1) y != path_color and [pcolor] of patch (x + 1) y != orange ) [
-    set result insert-item 0 result (patchID (x + 1) y)
+    set valid insert-item 0 valid (patchID (x + 1) y)
   ]
+    ; move to north
   if (y < (edge - 1) and [pcolor] of patch x (y + 1) != brown and [pcolor] of patch x (y + 1) != path_color and [pcolor] of patch x (y + 1) != orange ) [
-    set result insert-item (length result) result (patchID x (y + 1))
+    set valid insert-item (length valid) valid (patchID x (y + 1))
   ]
+    ; move to west
   if (x > 1 and [pcolor] of patch (x - 1) y != brown and [pcolor] of patch (x - 1) y != path_color and [pcolor] of patch (x - 1) y != orange) [
-    set result insert-item (length result) result (patchID (x - 1) y)
+    set valid insert-item (length valid) valid (patchID (x - 1) y)
   ]
-
+; move to south
   if (y > 1 and [pcolor] of patch x (y - 1) != brown and [pcolor] of patch x (y - 1) != path_color and [pcolor] of patch x (y - 1) != orange) [
-    set result insert-item (length result) result (patchID x (y - 1))
+    set valid insert-item (length valid) valid (patchID x (y - 1))
   ]
 
-  report result
+  report valid
 end
 
 to bfs [agent]
-  let startID patchID [xcor]of agent [ycor]of agent
-  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let startID patchID [xcor]of agent [ycor]of agent ; get ID of start
+  let goalID patchID [pxcor]of goal [pycor]of goal ; get ID of goal
   let queue []
   set queue insert-item 0 queue startID
   while [length queue > 0][
     let front first queue
-    set queue remove-item 0 queue
+    set queue remove-item 0 queue ; dequeue
     let choice valid_patch front blue
     let i 0
-    while [i < (length choice)] [
+    while [i < (length choice)] [ ; run all possible moves that got from valid_path function
       let move item i choice
-      if move = goalID [
+      if move = goalID [ ; found goal
         show "Found goal"
         stop
       ]
-      set queue lput move queue
+      set queue lput move queue ; enqueue
+      ; paint visited patches
       ask patches[
         if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
           [set pcolor blue]
@@ -172,9 +178,10 @@ to bfs_result
   bfs(turtle 0)
 end
 
+; Due to cost for each move = 1 => ucs = bfs
 to ucs [agent]
   let startID patchID [xcor]of agent [ycor]of agent
-  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let goalID patchID [pxcor]of goal [pycor]of goal
   let queue []
   set queue insert-item 0 queue startID
   while [length queue > 0][
@@ -202,9 +209,10 @@ to ucs_result
   ucs(turtle 0)
 end
 
+; Same with bfs but instead of queue we use stack
 to dfs [agent]
   let startID patchID [xcor]of agent [ycor]of agent
-  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let goalID patchID [pxcor]of goal [pycor]of goal
   let stack []
   set stack insert-item 0 stack startID
   while [length stack > 0][
