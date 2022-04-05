@@ -248,6 +248,36 @@ end
 to ucs_result
   ucs(turtle 0)
 end
+
+to dfs [agent]
+  let startID patchID [xcor]of agent [ycor]of agent
+  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let stack []
+  set stack insert-item 0 stack startID
+  while [length stack > 0][
+    let top item ((length stack) - 1) stack
+    set stack remove-item ((length stack) - 1) stack
+    let choice valid_patch top blue
+    let i (length choice) - 1
+    while [i >= 0] [
+      let move item i choice
+      if move = goalID [
+        show "Found goal"
+        stop
+      ]
+      set stack lput move stack
+      ask patches[
+        if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
+          [set pcolor blue]
+        ]
+      set i (i - 1)
+    ]
+  ]
+end
+
+to dfs_result
+  dfs(turtle 0)
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -344,6 +374,23 @@ BUTTON
 307
 Uniformed-cost search
 ucs_result
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+31
+330
+163
+363
+Depth-first search
+dfs_result
 NIL
 1
 T

@@ -284,6 +284,37 @@ to ucs_result
   ucs turtle 2 17
   ucs turtle 3 red
 end
+
+to dfs [agent path_color]
+  let startID patchID [xcor]of agent [ycor]of agent
+  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let stack []
+  set stack insert-item 0 stack startID
+  while [length stack > 0][
+    let top item ((length stack) - 1) stack
+    set stack remove-item ((length stack) - 1) stack
+    let choice valid_patch top path_color
+    let i (length choice) - 1
+    while [i >= 0] [
+      let move item i choice
+      if move = goalID [
+        show "Found goal"
+        stop
+      ]
+      set stack lput move stack
+      ask patches[
+        if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
+          [set pcolor path_color]
+        ]
+      set i (i - 1)
+    ]
+  ]
+end
+
+to dfs_result
+  dfs turtle 4 pink
+  dfs turtle 5 magenta
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -337,7 +368,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-0
+2
 
 BUTTON
 23
@@ -363,6 +394,23 @@ BUTTON
 305
 Uniformed-cost search
 ucs_result
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+27
+341
+159
+374
+Depth-first search
+dfs_result
 NIL
 1
 T

@@ -211,19 +211,19 @@ to dfs [agent]
     let top item ((length stack) - 1) stack
     set stack remove-item ((length stack) - 1) stack
     let choice valid_patch top blue
-    let i 0
-    while [i < (length choice)] [
+    let i (length choice) - 1
+    while [i >= 0] [
       let move item i choice
       if move = goalID [
         show "Found goal"
         stop
       ]
-      set stack insert-item 0 stack move
+      set stack lput move stack
       ask patches[
         if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
           [set pcolor blue]
         ]
-      set i (i + 1)
+      set i (i - 1)
     ]
   ]
 end
@@ -284,7 +284,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-4
+3
 
 BUTTON
 26
