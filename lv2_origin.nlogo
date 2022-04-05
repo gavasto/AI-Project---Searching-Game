@@ -42,7 +42,7 @@ to swap
    setup-point2
    ;;Set map
    if Maps = "OneWay"[setup-oneway]
-   if Maps = "Stuck" [setup-stuck]
+   if Maps = "Stuck" [setup-stuck2]
    if Maps = "Empty" [setup-empty]
    if Maps = "Cross" [setup-cross]
    if Maps ="Random" [setup-random]
@@ -113,6 +113,18 @@ to setup-stuck
     if pxcor = 35 and pycor >= 35 and pycor <= edge - 1
       [ set pcolor brown ]
     if pycor = 35 and pxcor >= 35 and pxcor <= edge - 1
+      [ set pcolor brown ]
+  ]
+  reset-ticks
+end
+
+to setup-stuck2
+  ask patches [
+    ;; if patches are between (0,0) to (0,edge)...
+    if pxcor = 5 and pycor >= 1 and pycor <= 5
+      [ set pcolor brown ]
+    ;; if patches are between (0,0) to (edge,0)...
+    if pycor = 5 and pxcor >= 1 and pxcor <= 5
       [ set pcolor brown ]
   ]
   reset-ticks
