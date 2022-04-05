@@ -163,6 +163,91 @@ to setup-random
      [set pcolor brown]
   ]
 end
+
+to-report patchID [x y]
+  report (y - 1) * (edge - 2) + (x - 1)
+end
+
+to-report valid_patch [ID path_color]
+  let x (ID mod (edge - 2)) + 1
+  let y floor(ID / (edge - 2)) + 1
+  let result []
+  if (x < (edge - 1) and [pcolor] of patch (x + 1) y != brown and [pcolor] of patch (x + 1) y != path_color and [pcolor] of patch (x + 1) y != orange ) [
+    set result insert-item 0 result (patchID (x + 1) y)
+  ]
+  if (y < (edge - 1) and [pcolor] of patch x (y + 1) != brown and [pcolor] of patch x (y + 1) != path_color and [pcolor] of patch x (y + 1) != orange ) [
+    set result insert-item (length result) result (patchID x (y + 1))
+  ]
+  if (x > 1 and [pcolor] of patch (x - 1) y != brown and [pcolor] of patch (x - 1) y != path_color and [pcolor] of patch (x - 1) y != orange) [
+    set result insert-item (length result) result (patchID (x - 1) y)
+  ]
+
+  if (y > 1 and [pcolor] of patch x (y - 1) != brown and [pcolor] of patch x (y - 1) != path_color and [pcolor] of patch x (y - 1) != orange) [
+    set result insert-item (length result) result (patchID x (y - 1))
+  ]
+
+  report result
+end
+
+to bfs [agent]
+  let startID patchID [xcor]of agent [ycor]of agent
+  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let queue []
+  set queue insert-item 0 queue startID
+  while [length queue > 0][
+    let front first queue
+    set queue remove-item 0 queue
+    let choice valid_patch front blue
+    let i 0
+    while [i < (length choice)] [
+      let move item i choice
+      if move = goalID [
+        show "Found goal"
+        stop
+      ]
+      set queue lput move queue
+      ask patches[
+        if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
+          [set pcolor blue]
+        ]
+      set i (i + 1)
+    ]
+  ]
+end
+
+to bfs_result
+  bfs(turtle 0)
+end
+
+to ucs [agent]
+  let startID patchID [xcor]of agent [ycor]of agent
+  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let queue []
+  set queue insert-item 0 queue startID
+  while [length queue > 0][
+    let front first queue
+    set queue remove-item 0 queue
+    let choice valid_patch front blue
+    let i 0
+    while [i < (length choice)] [
+      let move item i choice
+      if move = goalID [
+        show "Found goal"
+        stop
+      ]
+      set queue lput move queue
+      ask patches[
+        if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
+          [set pcolor blue]
+        ]
+      set i (i + 1)
+    ]
+  ]
+end
+
+to ucs_result
+  bfs(turtle 0)
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -216,7 +301,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-1
+2
 
 BUTTON
 117
@@ -225,6 +310,40 @@ BUTTON
 124
 Swap
 swap
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+30
+217
+172
+250
+Breadth-first search
+bfs_result
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+28
+274
+184
+307
+Uniformed-cost search
+ucs_result
 NIL
 1
 T
