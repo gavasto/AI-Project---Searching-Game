@@ -148,8 +148,8 @@ to bfs [agent]
   let queue []
   set queue insert-item 0 queue startID
   while [length queue > 0][
-    let front item ((length queue) - 1) queue
-    set queue remove-item ((length queue) - 1) queue
+    let front first queue
+    set queue remove-item 0 queue
     let choice valid_patch front blue
     let i 0
     while [i < (length choice)] [
@@ -158,7 +158,7 @@ to bfs [agent]
         show "Found goal"
         stop
       ]
-      set queue insert-item 0 queue move
+      set queue lput move queue
       ask patches[
         if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
           [set pcolor blue]
@@ -178,8 +178,8 @@ to ucs [agent]
   let queue []
   set queue insert-item 0 queue startID
   while [length queue > 0][
-    let front item ((length queue) - 1) queue
-    set queue remove-item ((length queue) - 1) queue
+    let front first queue
+    set queue remove-item 0 queue
     let choice valid_patch front blue
     let i 0
     while [i < (length choice)] [
@@ -188,7 +188,7 @@ to ucs [agent]
         show "Found goal"
         stop
       ]
-      set queue insert-item 0 queue move
+      set queue lput move queue
       ask patches[
         if(pxcor = (move mod (edge - 2) + 1) and pycor = (floor (move / (edge - 2)) + 1))
           [set pcolor blue]
