@@ -1,20 +1,17 @@
 globals [
   edge
   halfedge
-  validPatch
   Start
-  TotalCost
-  prePatch
-  cost
-  visited?
-  active?
+  Goal
+  visited
 ]
-breed [agents move]
+breed [agents object]
 
 to setup
   clear-all
   import-pcolors "background.jpg"
   reset-ticks
+  reset_board
 
   set edge 38
   set halfedge (edge / 2)
@@ -31,17 +28,6 @@ to setup
   if Maps = "Empty" [setup-empty]
   if Maps = "Cross" [setup-cross]
   if Maps ="Random" [setup-random]
-
-  ask patches
-  [
-    set prePatch nobody
-    set cost 0
-    set visited? false
-    set active? false
-
-  ]
-
-  set validPatch patches with [pcolor != brown and pxcor < 19 and pycor < 19]
 
   crt 1
   [
@@ -74,10 +60,12 @@ to setup-point
  ]
 
    ;; setup ENDING POINT
-   ask patches [
-    if pxcor = 18 and pycor = 18
-      [ set pcolor yellow ]                               ;
-  ]
+;   ask patches [
+;    if pxcor = 18 and pycor = 18
+;      [ set pcolor yellow ]                               ;
+;  ]
+  set Goal patch 18 18
+  ask Goal [set pcolor yellow]
 end
 
 to setup-border
@@ -158,35 +146,122 @@ to setup-random
   ]
 end
 
-to dfs_result
-  ifelse(dfs(turtle 0)) [
-    show "Found goal!!!"
-  ][
-    show "Can't found goal :<"
+;to dfs_result
+;  ifelse(dfs(turtle 0)) [
+;    show "Found goal!!!"
+;  ][
+;    show "Can't found goal :<"
+;  ]
+;end
+;
+;to-report dfs [n]
+;  if ([pcolor] of ([patch-here] of n) = yellow)[report true]
+;  visited
+;  let moveX (list 0 -1 1 0)
+;  let moveY (list 1 0 0 -1)
+;  foreach [0 1 2 3] [
+;    x -> let choice x
+;    let newX [xcor] of n + item choice moveX
+;    let newY [ycor] of n + item choice moveY
+;    if ([pcolor] of patch newX newY != brown and [pcolor] of patch newX newY != blue)[
+;      ask n [move-to patch newX newY]
+;      if(dfs(n)) [report true]
+;    ]
+;  ]
+;  report false
+;end
+;
+;to visited
+;  ask patches[
+;    if any? turtles-here [set pcolor blue]
+;  ]
+;end
+
+to reset_board
+  set visited []
+
+  let i 0
+  loop [
+    if i >= (edge * edge) [
+      stop
+    ]
+
+    set visited insert-item i visited 0
+    set i (i + 1)
   ]
 end
 
-to-report dfs [n]
-  if ([pcolor] of ([patch-here] of n) = yellow)[report true]
-  visited
-  let moveX (list 0 -1 1 0)
-  let moveY (list 1 0 0 -1)
-  foreach [0 1 2 3] [
-    x -> let choice x
-    let newX [xcor] of n + item choice moveX
-    let newY [ycor] of n + item choice moveY
-    if ([pcolor] of patch newX newY != brown and [pcolor] of patch newX newY != blue)[
-      ask n [move-to patch newX newY]
-      if(dfs(n)) [report true]
+to-report visited_map
+  let result []
+  let i 0
+
+  loop [
+    if i >= ((edge - 2) * (edge - 2)) [
+      report result
+    ]
+    set result insert-item i result item i visited
+    set i (i + 1)
+  ]
+  report result
+end
+
+to-report patchID [x y]
+  report y * (edge - 2) + x
+end
+
+to-report valid_patch [ID]
+  let x (ID mod edge)
+  let y floor (ID / edge)
+  let result []
+  if (x < (halfedge - 1) and x >= (- halfedge + 1) and [pcolor] of patch (x + 1) y != brown) [
+    set result insert-item 0 result (patchID (x + 1) y)
+  ]
+  if (y < (halfedge - 1) and y >= (- halfedge + 1) and [pcolor] of patch x (y + 1) != brown) [
+    set result insert-item (length result) result (patchID x (y + 1))
+  ]
+  if (x <= (halfedge - 1) and x > (- halfedge + 1)  and [pcolor] of patch (x - 1) y != brown) [
+    set result insert-item (length result) result (patchID (x - 1) y)
+  ]
+
+  if (y <= (halfedge - 1) and y > (- halfedge + 1) and [pcolor] of patch x (y - 1) != brown) [
+    set result insert-item (length result) result (patchID x (y - 1))
+  ]
+
+  report result
+end
+
+to bfs [agent]
+  let startID patchID [xcor]of agent [ycor]of agent
+  let goalID patchID [pxcor]of Goal [pycor]of goal
+  let current_visited visited_map
+  let queue []
+  set queue lput startID queue
+  set current_visited replace-item startID current_visited -1
+  while [length queue > 0][
+    let front first queue
+    set queue remove-item 0 queue
+    let choice valid_patch(front)
+    let i 0
+    while [i < (length choice)] [
+      let move item i choice
+      if move = goalID [
+        stop
+      ]
+      if item move current_visited = 0 [
+        set queue insert-item (length queue - 1) queue move
+        set current_visited replace-item move current_visited front
+        ask patches[
+          if(pxcor = (move mod edge) and pycor = (floor (move / edge)))
+            [set pcolor blue]
+          ]
+      ]
+      set i (i + 1)
     ]
   ]
-  report false
 end
 
-to visited
-  ask patches[
-    if any? turtles-here [set pcolor blue]
-  ]
+to bfs_result
+  bfs(turtle 0)
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -244,12 +319,12 @@ Maps
 2
 
 BUTTON
-15
-201
-84
-234
-DFS
-dfs_result
+41
+224
+128
+257
+NIL
+bfs_result
 NIL
 1
 T
