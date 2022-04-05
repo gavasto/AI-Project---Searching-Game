@@ -75,15 +75,8 @@ to setup-point
 
    ;; setup ENDING POINT
    ask patches [
-    if pxcor = 17 and pycor = 17
-      [ set pcolor yellow ]
-    if pxcor = 18 and pycor = 17
-      [ set pcolor yellow ]
-    if pxcor = 17 and pycor = 18
-      [ set pcolor yellow ]
     if pxcor = 18 and pycor = 18
       [ set pcolor yellow ]                               ;
-
   ]
 end
 

@@ -136,12 +136,6 @@ to setup-point
   ask patches [
     if pxcor = 0 and pycor = 0
       [ set pcolor yellow ]
-    if pxcor = 0 and pycor = 1
-      [ set pcolor yellow ]
-    if pxcor = 1 and pycor = 0
-      [ set pcolor yellow ]
-    if pxcor = 1 and pycor = 1
-      [ set pcolor yellow ]                               ;
   ]
 
 end
