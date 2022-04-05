@@ -21,8 +21,8 @@ to initial
   ;;Starting & Goal point
   setup-point1
   ;;Set map
-  if Maps = "OneWay"[setup-oneway1]
-  if Maps = "Stuck" [setup-stuck1]
+  if Maps = "OneWay"[setup-oneway]
+  if Maps = "Stuck" [setup-stuck]
   if Maps = "Empty" [setup-empty]
   if Maps = "Cross" [setup-cross]
   if Maps ="Random" [setup-random]
@@ -41,8 +41,8 @@ to swap
     ;;Starting & Goal point
    setup-point2
    ;;Set map
-   if Maps = "OneWay"[setup-oneway2]
-   if Maps = "Stuck" [setup-stuck2]
+   if Maps = "OneWay"[setup-oneway]
+   if Maps = "Stuck" [setup-stuck]
    if Maps = "Empty" [setup-empty]
    if Maps = "Cross" [setup-cross]
    if Maps ="Random" [setup-random]
@@ -97,7 +97,7 @@ to setup-border
   reset-ticks
 end
 
-to setup-oneway1
+to setup-oneway
   ask patches [
     if pxcor = 35 and pycor >= 37 and pycor <= edge - 1
       [ set pcolor brown ]
@@ -108,31 +108,11 @@ to setup-oneway1
   reset-ticks
 end
 
-to setup-oneway2
-  ask patches [
-    if pxcor = 5 and pycor >= 1 and pycor <= 3
-      [ set pcolor brown ]
-    if pycor = 5 and pxcor >= 1 and pxcor <= 5
-      [ set pcolor brown ]
-  ]
-  reset-ticks
-end
-
-to setup-stuck1
+to setup-stuck
   ask patches [
     if pxcor = 35 and pycor >= 35 and pycor <= edge - 1
       [ set pcolor brown ]
     if pycor = 35 and pxcor >= 35 and pxcor <= edge - 1
-      [ set pcolor brown ]
-  ]
-  reset-ticks
-end
-
-to setup-stuck2
-  ask patches [
-    if pxcor = 5 and pycor >= 1 and pycor <= 5
-      [ set pcolor brown ]
-    if pycor = 5 and pxcor >= 1 and pxcor <= 5
       [ set pcolor brown ]
   ]
   reset-ticks
@@ -224,7 +204,7 @@ CHOOSER
 Maps
 Maps
 "Empty" "Stuck" "OneWay" "Cross" "Random"
-3
+1
 
 BUTTON
 117
