@@ -179,10 +179,9 @@ end
 
 to reset_board
   set visited []
-
   let i 0
   loop [
-    if i >= (edge * edge) [
+    if i >= ((edge - 2) * (edge - 2)) [
       stop
     ]
 
@@ -194,7 +193,6 @@ end
 to-report visited_map
   let result []
   let i 0
-
   loop [
     if i >= ((edge - 2) * (edge - 2)) [
       report result
@@ -210,8 +208,8 @@ to-report patchID [x y]
 end
 
 to-report valid_patch [ID]
-  let x (ID mod edge)
-  let y floor (ID / edge)
+  let x (ID mod (edge - 2))
+  let y floor (ID / (edge - 2))
   let result []
   if (x < (halfedge - 1) and x >= (- halfedge + 1) and [pcolor] of patch (x + 1) y != brown) [
     set result insert-item 0 result (patchID (x + 1) y)
@@ -233,13 +231,13 @@ end
 to bfs [agent]
   let startID patchID [xcor]of agent [ycor]of agent
   let goalID patchID [pxcor]of Goal [pycor]of goal
-  let current_visited visited_map
+  let already_visited visited_map
   let queue []
   set queue lput startID queue
-  set current_visited replace-item startID current_visited -1
+  set already_visited replace-item startID already_visited -1
   while [length queue > 0][
-    let front first queue
-    set queue remove-item 0 queue
+    let front item ((length queue) - 1) queue
+    set queue remove-item ((length queue) - 1) queue
     let choice valid_patch(front)
     let i 0
     while [i < (length choice)] [
@@ -247,9 +245,9 @@ to bfs [agent]
       if move = goalID [
         stop
       ]
-      if item move current_visited = 0 [
-        set queue insert-item (length queue - 1) queue move
-        set current_visited replace-item move current_visited front
+      if item move already_visited = 0 [
+        set queue insert-item 0 queue move
+        set already_visited replace-item move already_visited front
         ask patches[
           if(pxcor = (move mod edge) and pycor = (floor (move / edge)))
             [set pcolor blue]
