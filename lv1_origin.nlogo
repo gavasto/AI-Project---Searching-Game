@@ -199,7 +199,7 @@ to ucs [agent]
 end
 
 to ucs_result
-  bfs(turtle 0)
+  ucs(turtle 0)
 end
 
 to dfs [agent]
